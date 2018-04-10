@@ -1,6 +1,8 @@
 import React, { Component } from 'react';
-import io from 'socket.io-client';
-import Lobby from './lobby';
+// import io from 'socket.io-client';
+// import Lobby from './lobby';
+import PlayerBox from './playerBox';
+import Header from './header';
 
 class App extends Component {
 //   constructor(props) {
@@ -56,8 +58,14 @@ class App extends Component {
 //   }
   render() {
     return (
-      <div>
-        App
+      <div className="container">
+        <Header />
+        <div className="row justify-content-center">
+          <div className="col-md-8 mb-4">
+            Hola
+          </div>
+          <PlayerBox />
+        </div>
       </div>
     );
   }
