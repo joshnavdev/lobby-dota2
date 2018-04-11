@@ -3,9 +3,10 @@ import { connect } from 'react-redux';
 
 import RoomList from './RoomList'
 import {
-  // fetchRooms,
-  agregateRooms,
+  fetchRooms,
+  // agregateRooms,
   updateRoomsFilter,
+  fetchRoomsSuccess,
   // updateCurrentCount,
   // increaseTime
 } from '../../actions/lobbyActions';
@@ -16,17 +17,19 @@ class Lobby extends Component {
     super(props);
 
     this.props.socket.on('LOBBY_SENT', lobby => {
-      this.props.dispatch(agregateRooms(lobby));
+      this.props.dispatch(fetchRoomsSuccess(lobby));
     });
 
-    this.props.socket.on('INCREASE_TIME', () => {
-      // this.props.dispatch(increaseTime());
+    this.props.socket.on('INCREASE_TIME', (lobby) => {
+      console.log(lobby);
+      this.props.dispatch(fetchRoomsSuccess(lobby));
       // Tengo que se incremente desde el server y por aqui solo recibir la data enter
       // crear un action creator que fucione la data traido con la que tengo en el store
     })
   }
 
   componentDidMount() {
+    this.props.dispatch(fetchRooms());
     this.props.socket.emit('SEND_LOBBY');
   }
 
@@ -53,8 +56,8 @@ class Lobby extends Component {
             <label className="btn btn-secondary active" onClick={this.onHandleClick.bind(null, 'playing')} >
               <input type="radio" />Playing
             </label>
-            <label className="btn btn-secondary" onClick={this.onHandleClick.bind(null, 'ended')}>
-              <input type="radio" />Ended
+            <label className="btn btn-secondary" onClick={this.onHandleClick.bind(null, 'finished')}>
+              <input type="radio" />Finished
             </label>
             <label className="btn btn-secondary" onClick={this.onHandleClick.bind(null, 'all')}>
               <input type="radio" />All

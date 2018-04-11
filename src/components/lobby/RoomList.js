@@ -6,7 +6,7 @@ class RoomList extends Component {
     if (rooms.length === 0) {
       return <div>No hay nada</div>
     }
-    return rooms.map(room => (<RoomReview key={room.id} room={room} />));
+    return rooms.map(room => (<RoomReview key={room._id} room={room} />));
   }
 
   render() {

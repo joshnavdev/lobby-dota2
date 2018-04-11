@@ -3,6 +3,9 @@ const formatTime = (number) => {
 }
 
 export const parseTime = (number) => {
+  if(number === undefined) {
+    return '--:--'
+  }
   const minutes = Math.trunc(number / 60);
   const seconds = number % 60;
   return `${formatTime(minutes)}:${formatTime(seconds)}`;

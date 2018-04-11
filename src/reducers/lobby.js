@@ -1,3 +1,4 @@
+import lodash from 'lodash';
 import {
   FETCH_ROOMS_BEGIN,
   FETCH_ROOMS_SUCCESS,
@@ -43,7 +44,7 @@ const lobby = (state = initialState, action) => {
       const { rooms } = action.payload;
       return {
         ...state,
-        rooms: [...state.rooms, ...rooms],
+        rooms: lodash.unionBy(rooms, state.rooms, '_id'),
         currentCount: getDataFiltered(rooms, state.filter, 'status').length
       }
     }
@@ -55,12 +56,12 @@ const lobby = (state = initialState, action) => {
 
     case FETCH_ROOMS_SUCCESS: { //PARA IMPLEMENTAR
       const { rooms } = action.payload;
-      console.log('LENGTH->', getDataFiltered(rooms, state.filter, 'status').length)
+      const newRooms = lodash.unionBy(rooms, state.rooms, '_id');
       return {
         ...state,
         loading: false,
-        rooms: rooms,
-        currentCount: getDataFiltered(rooms, state.filter, 'status').length
+        rooms: newRooms,
+        currentCount: getDataFiltered(newRooms, state.filter, 'status').length
       };
     }
 

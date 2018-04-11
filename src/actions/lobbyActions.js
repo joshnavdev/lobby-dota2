@@ -44,7 +44,7 @@ export const fetchRooms = () => async dispatch => {
   dispatch(fetchRoomsBegin());
   try {
     const rooms = await axios.get('/api/rooms');
-    dispatch(fetchRoomsSuccess(rooms));
+    dispatch(fetchRoomsSuccess(rooms.data));
   } catch (error) {
     dispatch(fetchRoomsFailure(error));
   }

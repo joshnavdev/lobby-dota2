@@ -1,12 +1,13 @@
+const { increaseTime } = require('../utils');
+
 module.exports = io => {
 
   io.on('connection', (socket) => {
     console.log(`${socket.id} has entered`);
     clearInterval(io.sockets.timerID);
     io.sockets.timerID = setInterval(() => {
-      // const updatedLobby = io.sockets.lobby.map(room => ({ ...room, time: room.time + 1 }));
-      // io.sockets.lobby = updatedLobby;
-      io.sockets.emit('INCREASE_TIME');
+      io.sockets.lobby = increaseTime(io.sockets.lobby, 1);
+      io.sockets.emit('INCREASE_TIME', io.sockets.lobby);
     }, 1000)
 
     socket.on('SEND_LOBBY', () => {

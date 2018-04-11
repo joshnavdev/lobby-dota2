@@ -1,5 +1,6 @@
 const express = require('express');
 const mongoose = require('mongoose');
+const bodyParser = require('body-parser');
 const app = express();
 const server = require('http').createServer(app);
 const io = require('socket.io')(server);
@@ -7,6 +8,7 @@ const port = process.env.PORT || 8000;
 
 // Setting up the models
 require('./models/Player');
+require('./models/Room');
 
 //CONNECTIN TO MONGO
 const mongoURI = "mongodb://joshua:password@ds241039.mlab.com:41039/dota2-lobby-prod-mdb";
@@ -16,15 +18,26 @@ mongoose.connect(mongoURI)
   });
 //
 
+app.use(bodyParser.json());
+
 io.sockets.lobby = [{
-  id: '123123',
-  createDate: Date.now(),
+  _id: mongoose.Types.ObjectId(),
+  dateCreated: Date.now(),
   time: 0, //solo ram
   mmrAverage: 3300, //3 300
   status: 'playing', // finding, playing, ended solo ram
-  dire: ['1','2','3','4','5'],
-  radiant: ['6','7','8','9','10'],
+  dire: [{ _id: '1', rol: 1 }, { _id: '2', rol: 2 }, { _id: '3', rol: 3 }, { _id: '4', rol: 4 }, { _id: '5', rol: 5 }],
+  radiant: [{ _id: '1', rol: 1 }, { _id: '2', rol: 2 }, { _id: '3', rol: 3 }, { _id: '4', rol: 4 }, { _id: '5', rol: 5 }],
   winner: null //dire, radian || 0,1
+},{
+  _id: mongoose.Types.ObjectId(),
+  dateCreated: Date.now(),
+  time: 0,
+  mmrAverage: 4500,
+  status: 'searching', // finding, playing, ended solo ram
+    dire: [{ _id: '1', rol: 1 }, { _id: '2', rol: 2 }, { _id: '5', rol: 5 }],
+    radiant: [{ _id: '1', rol: 1 }],
+  winner: null
 }];
 
 require('./socket')(io);

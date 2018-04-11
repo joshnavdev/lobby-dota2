@@ -13,7 +13,18 @@ const createRandomUser = () => {
   }
 }; 
 
-module.exports = (number) => {
+exports.increaseTime = (lobby=[], seconds) => {
+  if (lobby == []) return [];
+  return lobby.map(room => {
+    if (room.status === 'searching') return room;
+    return ({
+      ...room,
+      time: room.time + seconds
+    });
+  });
+}
+
+exports.createRandomUsers = (number) => {
   const players = [];
   for (i = 0; i < number; i++) {
     players.push(createRandomUser());
