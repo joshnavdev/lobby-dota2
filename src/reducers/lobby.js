@@ -4,14 +4,17 @@ import {
   FETCH_ROOMS_FAILURE,
   UPDATE_ROOMS_FILTER,
   AGREGATE_ROOMS,
+  // UPDATE_CURRENT_COUNT,
   // INCREASE_TIME
 } from '../actions/lobbyActions';
+import { getDataFiltered } from '../utils';
 
 const initialState = {
   rooms: [],
   filter: 'playing',
   showModal: false,
   currentRoom: '',
+  currentCount: 0,
   loading: false,
   error: null
 };
@@ -31,23 +34,35 @@ const lobby = (state = initialState, action) => {
     //       return room;
     //     })
     //   }
-    case AGREGATE_ROOMS:
+    // case UPDATE_CURRENT_COUNT:
+    //   return {
+    //     ...state,
+    //     currentCount: action.payload.count
+    //   };
+    case AGREGATE_ROOMS: {
+      const { rooms } = action.payload;
       return {
         ...state,
-        rooms: [...state.rooms, ...action.payload.rooms]
+        rooms: [...state.rooms, ...rooms],
+        currentCount: getDataFiltered(rooms, state.filter, 'status').length
       }
+    }
     case FETCH_ROOMS_BEGIN:
       return {
         ...state,
         loading: true
       };
-    
-    case FETCH_ROOMS_SUCCESS:
+
+    case FETCH_ROOMS_SUCCESS: { //PARA IMPLEMENTAR
+      const { rooms } = action.payload;
+      console.log('LENGTH->', getDataFiltered(rooms, state.filter, 'status').length)
       return {
         ...state,
         loading: false,
-        rooms: action.payload.rooms
+        rooms: rooms,
+        currentCount: getDataFiltered(rooms, state.filter, 'status').length
       };
+    }
 
     case FETCH_ROOMS_FAILURE:
       return {
@@ -56,11 +71,14 @@ const lobby = (state = initialState, action) => {
         error: action.payload.error
       };
 
-    case UPDATE_ROOMS_FILTER:
+    case UPDATE_ROOMS_FILTER: {
+      const { filter } = action.payload;
       return {
         ...state,
-        filter: action.payload.filter
+        filter: filter,
+        currentCount: getDataFiltered(state.rooms, filter, 'status').length
       };
+    }
 
     default:
       return { ...state }

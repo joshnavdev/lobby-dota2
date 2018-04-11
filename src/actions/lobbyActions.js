@@ -5,11 +5,16 @@ export const FETCH_ROOMS_SUCCESS = 'FETCH_ROOMS_SUCCESS';
 export const FETCH_ROOMS_FAILURE = 'FETCH_ROOMS_FAILURE';
 export const UPDATE_ROOMS_FILTER = 'UPDATE_ROOMS_FILTER';
 export const AGREGATE_ROOMS = 'AGREGATE_ROOMS';
+// export const UPDATE_CURRENT_COUNT = 'UPDATE_CURRENT_COUNT';
 // export const INCREASE_TIME = 'INCREASE_TIME';
 
 // export const increaseTime = () => ({
 //   type: INCREASE_TIME
 // });
+// export const updateCurrentCount = (count) => ({
+//   type: UPDATE_CURRENT_COUNT,
+//   payload: { count }
+// })
 
 export const agregateRooms = (rooms) => ({
   type: AGREGATE_ROOMS,

@@ -3,9 +3,10 @@ import { connect } from 'react-redux';
 
 import RoomList from './RoomList'
 import {
-  fetchRooms,
+  // fetchRooms,
   agregateRooms,
   updateRoomsFilter,
+  // updateCurrentCount,
   // increaseTime
 } from '../../actions/lobbyActions';
 
@@ -27,15 +28,23 @@ class Lobby extends Component {
 
   componentDidMount() {
     this.props.socket.emit('SEND_LOBBY');
-    // this.props.dispatch(fetchRooms());
   }
 
   onHandleClick = (type) => {
     this.props.dispatch(updateRoomsFilter(type))
   }
+
+  getRoomsFiltered = (rooms, filter) => {
+    if (filter === 'all') {
+      return rooms;
+    }
+
+    return rooms.filter(room => room.status === filter);
+  }
   
   render() {
-    const { rooms, filter, loading } = this.props.lobby;
+    const { rooms, filter, loading, currentCount } = this.props.lobby;
+    this.roomsFiltered = this.getRoomsFiltered(rooms, filter);
     return (
       <div className="col-md-8 mb-4">
         <h4 className="d-flex justify-content-between align-items-center mb-3">
@@ -52,10 +61,13 @@ class Lobby extends Component {
             </label>
           </div>
           <div>
-            <span className="badge badge-secondary badge-pill">{rooms.length}</span>
+            <span className="badge badge-secondary badge-pill">{currentCount}</span>
           </div>
         </h4>
-        <RoomList rooms={rooms} filter={filter} loading={loading} />
+        {
+         loading ? <div>Loading...</div> : 
+         <RoomList rooms={this.roomsFiltered} dispatch={this.props.dispatch} />
+        }
       </div>
     );
   }

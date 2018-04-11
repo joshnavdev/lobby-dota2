@@ -7,3 +7,9 @@ export const parseTime = (number) => {
   const seconds = number % 60;
   return `${formatTime(minutes)}:${formatTime(seconds)}`;
 }
+
+export const getDataFiltered = (data=[], filter, atribute) => {
+  if (data.length === 0) return [];
+  if (filter === 'all') return data;
+  return data.filter(d => d[atribute] === filter);
+}

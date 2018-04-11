@@ -1,30 +1,22 @@
-import React from 'react';
+import React, { Component } from 'react';
 import RoomReview from './RoomView';
 
-const RoomList = ({ rooms=[], filter, ...props}) => {
-  const statusCount = {
-    playing: 0,
-    finding: 0,
-    ended: 0
-  };
-  const renderRooms = (roomsData) => {
-    return roomsData.map(room => {
-      statusCount[room.status] = statusCount[room.status] + 1;
-      if (room.status === filter || filter === 'all') {
-        return (<RoomReview key={room.id} room={room} />)
-      }
-    });
+class RoomList extends Component {
+  renderRooms = (rooms) => {
+    if (rooms.length === 0) {
+      return <div>No hay nada</div>
+    }
+    return rooms.map(room => (<RoomReview key={room.id} room={room} />));
   }
 
-  if (props.loading) {
-    return (<div>Loading...</div>)
+  render() {
+    const { rooms=[] } = this.props;
+    return (
+      <div className="list-group">
+        {this.renderRooms(rooms)}
+      </div>
+    );
   }
-
-  return (
-    <div className="list-group">
-      {renderRooms(rooms)}
-    </div>
-  );
 };
 
 export default RoomList;
