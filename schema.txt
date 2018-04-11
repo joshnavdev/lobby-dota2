@@ -1,0 +1,15 @@
+{
+  looby: [{
+    id,
+    createDate,
+    time, //solo ram
+    mmrAverage, //3 300
+    status, // finding, playing, ended solo ram
+    dire: [idPlayer],
+    radiant: [idPlayer],
+    winner, //dire, radian || 0,1
+  }]
+  showModal, //true, false
+  loading,
+  error,
+}

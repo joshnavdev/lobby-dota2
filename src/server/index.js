@@ -1,41 +1,42 @@
 const express = require('express');
+const mongoose = require('mongoose');
 const app = express();
 const server = require('http').createServer(app);
 const io = require('socket.io')(server);
 const port = process.env.PORT || 8000;
 
-io.sockets.lobbies = []
+// Setting up the models
+require('./models/Player');
 
-io.on('connection', (socket) => {
-  console.log(`${socket.id} has entered`);
-  clearInterval(io.sockets.timerID);
-  io.sockets.timerID = setInterval(() => {
-    const updatedLobbies = io.sockets.lobbies.map(({ time, date }) => ({ time: time + 1, date }));
-    io.sockets.lobbies = updatedLobbies;
-    io.sockets.emit('LOBBY_OPENED', updatedLobbies);
-  }, 1000)
-
-  socket.on('SEND_LOBBY', () => {
-    socket.emit('LOBBY_OPENED', io.sockets.lobbies);
+//CONNECTIN TO MONGO
+const mongoURI = "mongodb://joshua:password@ds241039.mlab.com:41039/dota2-lobby-prod-mdb";
+mongoose.connect(mongoURI)
+  .then(resp => {
+    console.log('Connected to mongoDB');
   });
+//
 
-  socket.on('OPEN_LOBBY', lobby => {
-    // send just one lobby instead of all the lobbies
-    io.sockets.lobbies.push(lobby);
-    console.log(`${socket.id} has ${io.sockets.lobbies.length} lobbies`)
-    io.sockets.emit('LOBBY_OPENED', io.sockets.lobbies);
+io.sockets.lobby = [{
+  id: '123123',
+  createDate: Date.now(),
+  time: 0, //solo ram
+  mmrAverage: 3300, //3 300
+  status: 'playing', // finding, playing, ended solo ram
+  dire: ['1','2','3','4','5'],
+  radiant: ['6','7','8','9','10'],
+  winner: null //dire, radian || 0,1
+}];
+
+require('./socket')(io);
+
+require('./routes')(app);
+
+if (process.env.NODE_ENV === 'production') {
+  app.use(express.static(path.join(__dirname, '../../build')));
+
+  app.get('*', (req, res) => {
+    res.sendFile(__dirname + './index.html');
   });
-
-  
-  // socket.on('INCREASE_TIME', () => {
-  //   const updatedLobbies = io.sockets.lobbies.map(({ time, date }) => ({ time: time + 1, date }));
-  //   io.sockets.lobbies = updatedLobbies;
-  //   io.sockets.emit('LOBBY_OPENED', updatedLobbies);
-  // })
-
-  socket.on('disconnect', () => {
-    console.log(`${socket.id} has left`);
-  });
-});
+}
 
 server.listen(port);

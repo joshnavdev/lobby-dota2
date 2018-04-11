@@ -1,17 +1,31 @@
-import React from 'react';
+import React, {Component} from 'react';
+import PlayerReview from './PlayerReview';
+import { connect } from 'react-redux';
+import { fetchPlayers } from '../../actions/playerActions';
 
-const PlayerList = props => {
-  return (
-    <ul className="list-group ">
-      <li className="list-group-item d-flex justify-content-between mb-3">
-        <div>
-          <h6 className="my-0">Usuario-name</h6>
-          <small className="text-muted">status</small>
-        </div>
-        <span className="text-muted">Mmr: 3020</span>
-      </li>
-    </ul>
-  );
-};
+class PlayerList extends Component {
+  componentDidMount() {
+    this.props.dispatch(fetchPlayers());
+  }
 
-export default PlayerList;
+  renderPlayerReview = (players) => {
+    return players.map(player => (<PlayerReview key={player._id} player={player} />));
+  }
+
+  render() {
+    if (this.props.loading) {
+      return (
+        <h1 className="text-white text-center">Loading...</h1>
+      )
+    }
+    return (
+      <ul style={{ overflowY: 'scroll', maxHeight: '600px' }} className="list-group">
+        {this.renderPlayerReview(this.props.players)}
+      </ul>
+    );
+  }
+}
+
+const mapStateToProps = state => state.players;
+
+export default connect(mapStateToProps)(PlayerList);
