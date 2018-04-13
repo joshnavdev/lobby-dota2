@@ -1,11 +1,24 @@
 import React, {Component} from 'react';
 import PlayerReview from './PlayerReview';
 import { connect } from 'react-redux';
-import { fetchPlayers } from '../../actions/playerActions';
+import { fetchPlayers, updatePlayers } from '../../actions/playerActions';
 
 class PlayerList extends Component {
+  constructor(props) {
+    super(props);
+
+    this.props.socket.on('UPDATE_PLAYERS', player => {
+      this.props.dispatch(updatePlayers(player))
+    });
+
+    this.props.socket.on('RECEIVE_PLAYERS', (players = []) => {
+      this.props.dispatch(updatePlayers(players));
+    });
+  }
+
   componentDidMount() {
-    this.props.dispatch(fetchPlayers());
+    // this.props.dispatch(fetchPlayers());
+    this.props.socket.emit('SEND_PLAYERS');
   }
 
   renderPlayerReview = (players) => {

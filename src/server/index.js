@@ -11,7 +11,11 @@ require('./models/Player');
 require('./models/Room');
 
 //CONNECTIN TO MONGO
-const mongoURI = "mongodb://joshua:password@ds241039.mlab.com:41039/dota2-lobby-prod-mdb";
+const mongoURI = 'mongodb://localhost:27017/dota2-lobby-dev-mdb';
+if (process.env.NODE_ENV === 'production') {
+  mongoURI = "mongodb://joshua:password@ds241039.mlab.com:41039/dota2-lobby-prod-mdb";
+}
+
 mongoose.connect(mongoURI)
   .then(resp => {
     console.log('Connected to mongoDB');
@@ -20,29 +24,16 @@ mongoose.connect(mongoURI)
 
 app.use(bodyParser.json());
 
-io.sockets.lobby = [{
-  _id: mongoose.Types.ObjectId(),
-  dateCreated: Date.now(),
-  time: 0, //solo ram
-  mmrAverage: 3300, //3 300
-  status: 'playing', // finding, playing, ended solo ram
-  dire: [{ _id: '1', rol: 1 }, { _id: '2', rol: 2 }, { _id: '3', rol: 3 }, { _id: '4', rol: 4 }, { _id: '5', rol: 5 }],
-  radiant: [{ _id: '1', rol: 1 }, { _id: '2', rol: 2 }, { _id: '3', rol: 3 }, { _id: '4', rol: 4 }, { _id: '5', rol: 5 }],
-  winner: null //dire, radian || 0,1
-},{
-  _id: mongoose.Types.ObjectId(),
-  dateCreated: Date.now(),
-  time: 0,
-  mmrAverage: 4500,
-  status: 'searching', // finding, playing, ended solo ram
-    dire: [{ _id: '1', rol: 1 }, { _id: '2', rol: 2 }, { _id: '5', rol: 5 }],
-    radiant: [{ _id: '1', rol: 1 }],
-  winner: null
-}];
+mongoose.model('player').find({}).then(players => {
+  io.sockets.players = players;
+  require('./socket')(io);  
+});
 
-require('./socket')(io);
+io.sockets.timers = {};
+io.sockets.lobby = [];
 
 require('./routes')(app);
+
 
 if (process.env.NODE_ENV === 'production') {
   app.use(express.static(path.join(__dirname, '../../build')));

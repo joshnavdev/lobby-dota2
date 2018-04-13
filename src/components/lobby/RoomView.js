@@ -2,7 +2,7 @@ import React from 'react';
 import { parseTime } from '../../utils'
 
 const RoomView = ({ room, ...props }) => {
-  const { _id, dateCreated, time, mmrAverage, status } = room;
+  const { _id, dateCreated, time, mmrAverage, status, winner } = room;
 
   const style = status === 'playing' ? {
     pointerEvents: 'none'
@@ -15,8 +15,10 @@ const RoomView = ({ room, ...props }) => {
         {player.rol}
       </button>
     ));
+    let i = 10;
     while(playerTagArray.length < 5) {
-      playerTagArray.push(<button type="button" disabled className={`badge badge-secondary badge-pill`}>?</button>)
+      playerTagArray.push(<button key={i} type="button" disabled className={`badge badge-secondary badge-pill`}>?</button>)
+      i = i + 1;
     }
     return playerTagArray;
   }
@@ -31,7 +33,7 @@ const RoomView = ({ room, ...props }) => {
         <div>
           {renderPlayers(room.radiant, 'radiant')}
         </div>
-        <h1 className="mb-1 mt-1 text-center">{parseTime(time)}</h1>
+        <h1 className="mb-1 mt-1 text-center">{time === undefined ? winner.replace(/\b\w/g, l => l.toUpperCase()) : parseTime(time)}</h1>
         <div>
           {renderPlayers(room.dire, 'dire')}
         </div>

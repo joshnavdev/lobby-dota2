@@ -1,14 +1,30 @@
-const { increaseTime } = require('../utils');
+const { increaseTime, randomChangePlayerStatus } = require('../utils');
+const { simulateGame } = require('../utils/emparejamiento');
 
 module.exports = io => {
 
   io.on('connection', (socket) => {
     console.log(`${socket.id} has entered`);
-    clearInterval(io.sockets.timerID);
-    io.sockets.timerID = setInterval(() => {
+
+    clearInterval(io.sockets.timerIncreaseTime);
+    io.sockets.timerIncreaseTime = setInterval(() => {
       io.sockets.lobby = increaseTime(io.sockets.lobby, 1);
       io.sockets.emit('INCREASE_TIME', io.sockets.lobby);
-    }, 1000)
+    }, 100)
+
+    clearInterval(io.sockets.timerChangePlayerStatus);
+    io.sockets.timerChangePlayerStatus = setInterval(() => {
+      randomChangePlayerStatus(io.sockets.players, (players, player) => {
+        io.sockets.players = players;
+        io.sockets.emit('UPDATE_PLAYERS', [player]);
+      });
+    }, 300);
+
+    simulateGame(io);
+
+    socket.on('SEND_PLAYERS', () => {
+      socket.emit('RECEIVE_PLAYERS', io.sockets.players);
+    });
 
     socket.on('SEND_LOBBY', () => {
       socket.emit('LOBBY_SENT', io.sockets.lobby);

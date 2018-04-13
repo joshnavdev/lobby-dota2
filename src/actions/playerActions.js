@@ -1,9 +1,16 @@
 import axios from 'axios';
+import { getNewCount } from '../utils';
 
 export const FETCH_PLAYERS_BEGIN = 'FETCH_PLAYERS_BEGIN';
 export const FETCH_PLAYERS_SUCCESS = 'FETCH_PLAYERS_SUCCESS';
 export const FETCH_PLAYERS_FAILURE = 'FETCH_PLAYERS_FAILURE';
 export const UPDATE_PLAYERS_COUNTS = 'UPDATE_PLAYERS_COUNTS';
+export const UPDATE_PLAYERS = 'UPDATE_PLAYERS';
+
+export const updatePlayers = (players) => ({
+  type: UPDATE_PLAYERS,
+  payload: { players }
+})
 
 export const updatePlayersCounts = (counts) => ({
   type: UPDATE_PLAYERS_COUNTS,
@@ -28,10 +35,10 @@ export const fetchPlayers = () => dispatch => {
   dispatch(fetchPlayersBegin());
   axios.get('/api/players')
     .then(resp => {
-      const offlineCounts = resp.data.filter(player => player.status === 'offline').length;
-      const waitingCounts = resp.data.length - offlineCounts;
+      const players = resp.data;
+      const newCounts = getNewCount(players);
       dispatch(fetchPlayersSucces(resp.data));
-      dispatch(updatePlayersCounts({offlineCounts, waitingCounts, playingCounts: 0 }));
+      dispatch(updatePlayersCounts(newCounts));
 
     })
     .catch(err => dispatch(fetchPlayersFailure(err)));

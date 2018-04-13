@@ -4,9 +4,10 @@ import { connect } from 'react-redux';
 import RoomList from './RoomList'
 import {
   fetchRooms,
-  // agregateRooms,
+  agregateRooms,
   updateRoomsFilter,
   fetchRoomsSuccess,
+  // updateLobby,
   // updateCurrentCount,
   // increaseTime
 } from '../../actions/lobbyActions';
@@ -20,8 +21,11 @@ class Lobby extends Component {
       this.props.dispatch(fetchRoomsSuccess(lobby));
     });
 
+    this.props.socket.on('UPDATE_LOBBY', room => {
+      this.props.dispatch(agregateRooms(room));
+    });
+
     this.props.socket.on('INCREASE_TIME', (lobby) => {
-      console.log(lobby);
       this.props.dispatch(fetchRoomsSuccess(lobby));
       // Tengo que se incremente desde el server y por aqui solo recibir la data enter
       // crear un action creator que fucione la data traido con la que tengo en el store
